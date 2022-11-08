@@ -25,7 +25,40 @@ def get_listings_from_search_results(html_file):
         ('Loft in Mission District', 210, '1944564'),  # example
     ]
     """
-    pass
+    new_list = []
+    price_list = []
+    name_list = []
+    id_list = []
+    
+    with open(html_file) as f:
+        soup = BeautifulSoup(f, 'html.parser')
+   
+    # names 
+    name = soup.find_all("div", class_= "t1jojoys dir dir-ltr")
+    for n in name:
+        name_list.append(n.text)
+        ids = n.get("id")
+        id_list.append(ids.strip("title_"))
+    # print(name_list)
+    # print(id_list)
+
+    
+    # price
+    price = soup.find_all("span", class_="_tyxjp1")
+    for p in price:
+        new_price = []
+        price_list.append(p.text)
+        for items in price_list:
+            cost = items.strip("$")
+            new_price.append(cost)
+    # print(new_price)
+
+    for i in range(len(new_price)):
+        tup = (name_list[i], id_list[i], new_price[i])
+        new_list.append(tup)
+    # print(new_list)
+    
+
 
 
 def get_listing_information(listing_id):
@@ -52,8 +85,34 @@ def get_listing_information(listing_id):
         number of bedrooms
     )
     """
-    pass
+    policy_list = []
+    type_list = []
+    beds_list = []
+    new_list = []
+    listing = "html_files/listing_" + listing_id + ".html"
+    with open(listing) as f:
+        soup = BeautifulSoup(f, 'html.parser')
+    
+    #  policy number 
+    policy_number = soup.find_all("span", class_="ll4r2nl dir dir-ltr")
+    for nums in policy_number:
+        policy_list.append(nums.text)
+    # print(policy_list)
+    # can find the numbers now just need to strip or use regex 
 
+    
+    # place type 
+    place_type = soup.find_all("h2", class_="_14i3z6h")
+    for type in place_type:
+        type_list.append(type.text)
+    print(type_list)
+    # number of bedrooms
+    bedroom_number = soup.find_all("span", class_="")
+    for beds in bedroom_number:
+        beds_list.append(beds.text)
+    new_beds = beds_list[3]
+    # print(new_beds)
+   
 
 def get_detailed_listing_database(html_file):
     """
@@ -94,6 +153,7 @@ def write_csv(data, filename):
 
     This function should not return anything.
     """
+    # sort list based on cost and writr csv 
     pass
 
 
@@ -116,6 +176,7 @@ def check_policy_numbers(data):
     ]
 
     """
+    # use regex 
     pass
 
 
@@ -141,6 +202,7 @@ class TestCases(unittest.TestCase):
     def test_get_listings_from_search_results(self):
         # call get_listings_from_search_results("html_files/mission_district_search_results.html")
         # and save to a local variable
+       
         listings = get_listings_from_search_results("html_files/mission_district_search_results.html")
         # check that the number of listings extracted is correct (20 listings)
         self.assertEqual(len(listings), 20)
