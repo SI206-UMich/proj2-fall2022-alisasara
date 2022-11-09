@@ -158,16 +158,18 @@ def get_detailed_listing_database(html_file):
     ]
     """
     new_list = []
-    ids = []
+    
     with open(html_file) as f:
         for items in get_listings_from_search_results(html_file):
-            ids.append(items[-1])
-    print(ids)
-    for i in range(len(ids)):
-        
-    
+            # print(items)
+            ids = items[-1]
+            # print(ids)
 
-    
+            second_function = (get_listing_information(ids))
+            # print(second_function)
+            new_list = items + second_function 
+            print(new_list)
+            return new_list
 
 
 def write_csv(data, filename):
