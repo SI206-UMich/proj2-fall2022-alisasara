@@ -158,9 +158,13 @@ def get_detailed_listing_database(html_file):
     ]
     """
     new_list = []
+    ids = []
     with open(html_file) as f:
         for items in get_listings_from_search_results(html_file):
-            print(items)
+            ids.append(items[-1])
+    print(ids)
+    for i in range(len(ids)):
+        
     
 
     
