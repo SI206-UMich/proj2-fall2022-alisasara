@@ -54,9 +54,10 @@ def get_listings_from_search_results(html_file):
     # print(new_price)
 
     for i in range(len(new_price)):
-        tup = (name_list[i], id_list[i], new_price[i])
+        tup = (name_list[i], new_price[i], id_list[i])
         new_list.append(tup)
     # print(new_list)
+    # return new_list
     
 
 
@@ -94,30 +95,57 @@ def get_listing_information(listing_id):
         soup = BeautifulSoup(f, 'html.parser')
     
     #  policy number 
-    policy_number = soup.find_all("span", class_="ll4r2nl dir dir-ltr")
+    policy_number = soup.find_all("li", class_="f19phm7j dir dir-ltr")
     for nums in policy_number:
         policy_list.append(nums.text)
     # print(policy_list)
+    number = policy_list[0].split()
+    # print(number)
+    pn = []
+    if len(number) > 3:
+        policy = number[2] + " " +number[3]
+    else: 
+        policy = number[2]
+    # print(policy)
+    # number = []
+    # for p_n in pn:
+    #     number.append(p_n)
+    # print(number)
+    # for num in policy_list:
+    #     print(num)
+    
+
     # can find the numbers now just need to strip or use regex 
 
     
     # place type 
-    place_type = soup.find_all("h2", class_="_14i3z6h")
+    place_type = soup.find_all(class_="_14i3z6h")
     for type in place_type:
         type_list.append(type.text)
-    print(type_list)
+    new_place = (type_list[0].split()[0])
+    # print(new_place)
+    new_place_type = new_place + " Room"
+    # print(new_place_type)
+
+    
     # number of bedrooms
     bedroom_number = soup.find_all("span", class_="")
     for beds in bedroom_number:
         beds_list.append(beds.text)
-    new_beds = beds_list[3]
+    # print(beds_list)
+    new_beds = beds_list[2][0]
     # print(new_beds)
+
+    
+    tup = (policy, new_place_type, int(new_beds))
+    # print(tup)
+    return tup
    
 
 def get_detailed_listing_database(html_file):
     """
     Write a function that calls the above two functions in order to return
-    the complete listing information using the functions you’ve created.
+    the complete listing information using the functions you've created.
     This function takes in a variable representing the location of the search results html file.
     The return value should be in this format:
 
@@ -128,7 +156,11 @@ def get_detailed_listing_database(html_file):
         ...
     ]
     """
-    pass
+    new_list = []
+    with open(html_file) as f:
+        soup = BeautifulSoup(f, 'html.parser')
+    print(get_listings_from_search_results(html_file))
+    
 
 
 def write_csv(data, filename):
