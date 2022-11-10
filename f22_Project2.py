@@ -49,13 +49,13 @@ def get_listings_from_search_results(html_file):
         price_list.append(p.text)
         for items in price_list:
             cost = items.strip("$")
-            new_price.append(cost)
+            new_price.append(int(cost))
     # print(new_price)
 
     for i in range(len(new_price)):
         tup = (name_list[i], new_price[i], id_list[i])
         new_list.append(tup)
-    #print(new_list)
+    # print(new_list)
     # print(type(new_list))
     return(new_list)
 
@@ -88,6 +88,7 @@ def get_listing_information(listing_id):
     )
     """
     policy_list = []
+    num = []
     type_list = []
     beds_list = []
     new_list = []
@@ -100,13 +101,21 @@ def get_listing_information(listing_id):
     for nums in policy_number:
         policy_list.append(nums.text)
     # print(policy_list)
-    number = policy_list[0].split()
-    # print(number)
-    pn = []
-    if len(number) > 3:
-        policy = number[2] + " " +number[3]
-    else: 
-        policy = number[2]
+    number = policy_list[0]
+    for items in number.split():
+        num.append(items)
+    # print(num)
+    # print(len(num))
+    # print(num[2])
+    if len(num) == 3:
+        policy = num[2]
+    elif "License" in num:
+        policy = "Exempt"
+    else:
+        policy = "Pending"
+
+    # 
+    # 
     # print(policy)
     # number = []
     # for p_n in pn:
@@ -130,11 +139,16 @@ def get_listing_information(listing_id):
 
     
     # number of bedrooms
-    bedroom_number = soup.find_all("span", class_="")
+    bedroom_number = soup.find_all("span", class_= "")
     for beds in bedroom_number:
+        # print(beds)
         beds_list.append(beds.text)
     # print(beds_list)
     new_beds = beds_list[2][0]
+    if new_beds == "S":
+        new_beds = 1
+    else: 
+        new_beds = new_beds
     # print(new_beds)
 
     
@@ -157,20 +171,30 @@ def get_detailed_listing_database(html_file):
         ...
     ]
     """
-    new_list = []
+    
     
     with open(html_file) as f:
+        new_list = []
+        first_function = []
+        second_function = []
+        ids = []
         for items in get_listings_from_search_results(html_file):
+            ids.append(items[-1])
             # print(items)
-            ids = items[-1]
-            # print(ids)
-
-            second_function = (get_listing_information(ids))
-            # print(second_function)
-            new_list = items + second_function 
-            print(new_list)
-            return new_list
-
+            first_function.append(items)
+        # print(first_function)
+        for i in range(len(ids)):
+        #     for f in first_function[i]:
+        #         print(f)
+            s = get_listing_information(ids[i])
+            second_function.append(s)
+        # print(second_function)
+        for i in range(len(second_function)):
+            new = first_function[i] + second_function[i]
+            new_list.append(new)
+        # print(new_list)
+        # print(new_list)
+        return new_list
 
 def write_csv(data, filename):
     """
@@ -194,9 +218,20 @@ def write_csv(data, filename):
 
     This function should not return anything.
     """
-    # new_data = sorted(data )
+    # for items in data:
+    #     print(items)
+   
+    f = open(filename, 'w')
+    f.write('Listing Title, Cost, Listing ID, Policy Number, Place Type, Number of Bedrooms')
+    # print(data)
+    new_data = sorted(data, key = lambda x: x[1])
+    # print(new_data)
+    f.write("\n")
+    for items in new_data:
+        # print(items)
+        f.write(str(items) + "\n")
+    f.close()
 
-    # sort list based on cost and writr csv 
     pass
 
 
@@ -219,8 +254,32 @@ def check_policy_numbers(data):
     ]
 
     """
-    # use regex 
-    pass
+    policy_num = []
+    correct = []
+    regex_1 = "20\d{2}\-00\d{4}STR"
+    regex_2 = "STR\-000\d{4}"
+    for items in data:
+        policy_num.append(items[3])
+    for items in policy_num:
+        found_1 = re.findall(regex_1, items)
+        if found_1:
+            correct.append(items)
+        found_2 = re.findall(regex_2, items)
+        if found_2:
+           correct.append(items) 
+    print(correct)
+    # print(correct)
+    for d in range(len(data)):
+        # print(data[d][3])
+        # print(correct[d])
+        if correct[d] != data[d][3]:
+            print(data[d])
+            # return data[d]
+
+    
+
+
+
 
 
 def extra_credit(listing_id):
@@ -240,23 +299,23 @@ def extra_credit(listing_id):
     pass
 
 
-# class TestCases(unittest.TestCase):
+class TestCases(unittest.TestCase):
 
-#     def test_get_listings_from_search_results(self):
-#         # call get_listings_from_search_results("html_files/mission_district_search_results.html")
-#         # and save to a local variable
+    def test_get_listings_from_search_results(self):
+        # call get_listings_from_search_results("html_files/mission_district_search_results.html")
+        # and save to a local variable
        
-#         listings = get_listings_from_search_results("html_files/mission_district_search_results.html")
-#         # check that the number of listings extracted is correct (20 listings)
-#         self.assertEqual(len(listings), 20)
-#         # check that the variable you saved after calling the function is a list
-#         self.assertEqual(type(listings), list)
-#         # check that each item in the list is a tuple
+        listings = get_listings_from_search_results("html_files/mission_district_search_results.html")
+        # check that the number of listings extracted is correct (20 listings)
+        self.assertEqual(len(listings), 20)
+        # check that the variable you saved after calling the function is a list
+        self.assertEqual(type(listings), list)
+        # check that each item in the list is a tuple
 
-#         # check that the first title, cost, and listing id tuple is correct (open the search results html and find it)
+        # check that the first title, cost, and listing id tuple is correct (open the search results html and find it)
 
-#         # check that the last title is correct (open the search results html and find it)
-#         pass
+        # check that the last title is correct (open the search results html and find it)
+        pass
 
 #     def test_get_listing_information(self):
 #         html_list = ["1623609",
