@@ -54,7 +54,7 @@ def get_listings_from_search_results(html_file):
     for i in range(len(new_price)):
         tup = (name_list[i], new_price[i], id_list[i])
         new_list.append(tup)
-    print(new_list[-1][0])
+    # print(new_list[-1][0])
     # print(type(new_list))
     return(new_list)
 
